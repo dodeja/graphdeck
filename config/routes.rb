@@ -1,4 +1,8 @@
 Graphdeck::Application.routes.draw do
+  resources :aggregate_metrics
+
+  resources :metrics
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

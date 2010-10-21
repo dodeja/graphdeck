@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Key:</b>
+  <%= @aggregate_metric.key %>
+</p>
+
+<p>
+  <b>Value:</b>
+  <%= @aggregate_metric.value %>
+</p>
+
+<p>
+  <b>Timestamp:</b>
+  <%= @aggregate_metric.timestamp %>
+</p>
+
+<p>
+  <b>Duration:</b>
+  <%= @aggregate_metric.duration %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @aggregate_metric.type %>
+</p>
+
+
+<%= link_to 'Edit', edit_aggregate_metric_path(@aggregate_metric) %> |
+<%= link_to 'Back', aggregate_metrics_path %>

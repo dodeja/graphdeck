@@ -1,0 +1,2 @@
+module AggregateMetricsHelper
+end

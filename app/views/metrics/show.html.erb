@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Key:</b>
+  <%= @metric.key %>
+</p>
+
+<p>
+  <b>Value:</b>
+  <%= @metric.value %>
+</p>
+
+<p>
+  <b>Timestamp:</b>
+  <%= @metric.timestamp %>
+</p>
+
+
+<%= link_to 'Edit', edit_metric_path(@metric) %> |
+<%= link_to 'Back', metrics_path %>
