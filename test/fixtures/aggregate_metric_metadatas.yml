@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  key: MyString
+  timestamp: 1
+  duration: 1
+  type: 1
+
+two:
+  key: MyString
+  timestamp: 1
+  duration: 1
+  type: 1

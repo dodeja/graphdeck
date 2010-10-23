@@ -1,0 +1,29 @@
+<h1>Listing aggregate_metric_metadatas</h1>
+
+<table>
+  <tr>
+    <th>Key</th>
+    <th>Timestamp</th>
+    <th>Duration</th>
+    <th>Type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @aggregate_metric_metadatas.each do |aggregate_metric_metadata| %>
+  <tr>
+    <td><%= aggregate_metric_metadata.key %></td>
+    <td><%= aggregate_metric_metadata.timestamp %></td>
+    <td><%= aggregate_metric_metadata.duration %></td>
+    <td><%= aggregate_metric_metadata.type %></td>
+    <td><%= link_to 'Show', aggregate_metric_metadata %></td>
+    <td><%= link_to 'Edit', edit_aggregate_metric_metadata_path(aggregate_metric_metadata) %></td>
+    <td><%= link_to 'Destroy', aggregate_metric_metadata, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Aggregate metric metadata', new_aggregate_metric_metadata_path %>

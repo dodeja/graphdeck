@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Key:</b>
+  <%= @aggregate_metric_metadata.key %>
+</p>
+
+<p>
+  <b>Timestamp:</b>
+  <%= @aggregate_metric_metadata.timestamp %>
+</p>
+
+<p>
+  <b>Duration:</b>
+  <%= @aggregate_metric_metadata.duration %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @aggregate_metric_metadata.type %>
+</p>
+
+
+<%= link_to 'Edit', edit_aggregate_metric_metadata_path(@aggregate_metric_metadata) %> |
+<%= link_to 'Back', aggregate_metric_metadatas_path %>

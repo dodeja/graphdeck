@@ -1,0 +1,33 @@
+<%= form_for(@aggregate_metric_metadata) do |f| %>
+  <% if @aggregate_metric_metadata.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@aggregate_metric_metadata.errors.count, "error") %> prohibited this aggregate_metric_metadata from being saved:</h2>
+
+      <ul>
+      <% @aggregate_metric_metadata.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :key %><br />
+    <%= f.text_field :key %>
+  </div>
+  <div class="field">
+    <%= f.label :timestamp %><br />
+    <%= f.text_field :timestamp %>
+  </div>
+  <div class="field">
+    <%= f.label :duration %><br />
+    <%= f.text_field :duration %>
+  </div>
+  <div class="field">
+    <%= f.label :type %><br />
+    <%= f.text_field :type %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
