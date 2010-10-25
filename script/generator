@@ -4,6 +4,6 @@ require 'net/http'
 require 'uri'
 
 #1: Simple POST
-args = {'metric[key]'=>'test', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s}
+args = {'metric[name]'=>'foo', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s}
 res = Net::HTTP.post_form(URI.parse('http://localhost:8080/metrics'), args)
 puts res.body

@@ -2,48 +2,115 @@ namespace :graphdeck do
 
   desc 'Aggregate metrics'
   task :aggregate => :environment do
-    puts "Get all keys from 5 minute interval"
-    metrics = Metric.find_all_by_key('test')
+    puts "Get all names from 5 minute interval"
+    metrics = Metric.find(:all).group_by { |metric| metric.name }
+    metrics.each do |name, array|
+      
+      
+      namemetrics = Metric.find_all_by_name(name).group_by { |metric| metric.timestamp / 300 * 300 }
+      namemetrics.each do |range, array|
+        unless range == Time.now.to_i / 300 * 300
+          count = 0
+          average = 0.0
+        
+          array.sort! { |x,y| x.value <=> y.value }.each do |metric|
+            count += 1 
+            average += metric.value
+          end
     
-    count = 0
-    average = 0.0
+          if count != 0
+            average /= count
     
-    metrics.each do |metric|
-      count += 1 
-      average += metric.value
+            tp50i = ((count-1) * 50 / 100)
+            puts tp50i
+            tp50 = array[tp50i].value
+      
+            tp90i = ((count-1) * 90 / 100)
+            tp90 = array[tp90i].value
+      
+            tp99i = ((count-1) * 99 / 100)
+            tp99 = array[tp99i].value
+      
+            tp100i = count - 1
+            tp100 = array[tp100i].value
+          end
+      
+          puts "=== #{name} #{range}"
+          puts "Count: " + count.to_s
+          puts "Average: " + average.to_s
+          
+          puts "tp50i: " + tp50i.to_s
+          puts "tp50: " + tp50.to_s
+          puts "tp90i: " + tp90i.to_s
+          puts "tp90: " + tp90.to_s
+          puts "tp99i: " + tp99i.to_s
+          puts "tp99: " + tp99.to_s
+          puts "tp100i: " + tp100i.to_s
+          puts "tp100: " + tp100.to_s
+
+          amaverage = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::AVERAGE])
+          amtp50 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP50])
+          amtp90 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP90])
+          amtp99 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP99])
+          amtp100 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP100])
+          if amaverage.nil?
+            amaverage = AggregateMetric.new(:name => name, :value => average, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::AVERAGE)
+            if amaverage.save
+              puts "Save success"
+            else
+              puts "Save fail: #{amaverage.errors.inspect}"
+            end
+          else
+            puts "Didn't create a new aggregate metric because I already found one: #{amaverage.inspect}"
+          end
+          
+          if amtp50.nil?
+            amtp50 = AggregateMetric.new(:name => name, :value => tp50, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP50)
+            if amtp50.save
+              puts "Save success"
+            else
+              puts "Save fail: #{amtp50.errors.inspect}"
+            end
+          else
+            puts "Didn't create a new aggregate metric because I already found one: #{amtp50.inspect}"
+          end
+          
+          if amtp90.nil?
+            amtp90 = AggregateMetric.new(:name => name, :value => tp90, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP90)
+            if amtp90.save
+              puts "Save success"
+            else
+              puts "Save fail: #{amtp90.errors.inspect}"
+            end
+          else
+            puts "Didn't create a new aggregate metric because I already found one: #{amtp90.inspect}"
+          end
+          
+          if amtp99.nil?
+            amtp99 = AggregateMetric.new(:name => name, :value => tp99, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP99)
+            if amtp99.save
+              puts "Save success"
+            else
+              puts "Save fail: #{amtp99.errors.inspect}"
+            end
+          else
+            puts "Didn't create a new aggregate metric because I already found one: #{amtp99.inspect}"
+          end
+          
+          if amtp100.nil?
+            amtp100 = AggregateMetric.new(:name => name, :value => tp100, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP100)
+            if amtp100.save
+              puts "Save success"
+            else
+              puts "Save fail: #{amtp100.errors.inspect}"
+            end
+          else
+            puts "Didn't create a new aggregate metric because I already found one: #{amtp100.inspect}"
+          end
+          
+        end
+      end
     end
-    
-    if count != 0
-      puts "Calculate average"
-      average /= count
-    
-      puts "Calculate tp50"
-      tp50i = (count * 50 / 100).to_i - 1
-      tp50 = metrics[tp50i].value
-      
-      puts "Calculate tp90"
-      tp90i = (count * 90 / 100).to_i - 1
-      tp90 = metrics[tp90i].value
-      
-      puts "Calculate tp99"
-      tp99i = (count * 99 / 100).to_i - 1
-      tp99 = metrics[tp99i].value
-      
-      puts "Calculate tp100"
-      tp100i = count - 1
-      tp100 = metrics[tp100i].value
-    end
-    
-    puts "Count: " + count.to_s
-    puts "Average: " + average.to_s
-    puts "tp50i: " + tp50i.to_s
-    puts "tp50: " + tp50.to_s
-    puts "tp90i: " + tp90i.to_s
-    puts "tp90: " + tp90.to_s
-    puts "tp99i: " + tp99i.to_s
-    puts "tp99: " + tp99.to_s
-    puts "tp100i: " + tp100i.to_s
-    puts "tp100: " + tp100.to_s
   end
   
 end
