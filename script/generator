@@ -3,7 +3,17 @@
 require 'net/http'
 require 'uri'
 
-#1: Simple POST
-args = {'metric[name]'=>'foo', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s}
-res = Net::HTTP.post_form(URI.parse('http://localhost:8080/metrics'), args)
-puts res.body
+def generate
+  args = {'metric[name]'=>'foo', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s}
+  res = Net::HTTP.post_form(URI.parse('http://localhost:8080/metrics'), args)
+  puts res.body
+end
+
+if ARGV.length > 0
+  ARGV[0].to_i.times do |i|
+    sleep rand(10)
+    generate
+  end
+else
+  generate
+end
