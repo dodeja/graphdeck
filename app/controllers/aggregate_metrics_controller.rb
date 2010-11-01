@@ -1,4 +1,13 @@
 class AggregateMetricsController < ApplicationController
+  
+  def view
+    @type = params[:type] || 0
+    @from = params[:from] || (Time.now.to_i - 86400) / 300 * 300
+    @to = params[:to] || Time.now.to_i / 300 * 300
+    @aggregate_metrics = AggregateMetric.find_all_by_name(params[:name], :conditions => "metric_type = #{@type} and timestamp >= #{@from} and timestamp <= #{@to}")
+    @indexed_aggregate_metrics = @aggregate_metrics.index_by(&:timestamp)
+  end
+  
   # GET /aggregate_metrics
   # GET /aggregate_metrics.xml
   def index

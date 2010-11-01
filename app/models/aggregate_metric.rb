@@ -1,4 +1,5 @@
 class AggregateMetric < ActiveRecord::Base
+  COUNT = 0
   AVERAGE = 1
   TP50 = 2
   TP90 = 3

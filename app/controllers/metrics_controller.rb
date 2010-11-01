@@ -3,6 +3,10 @@ class MetricsController < ApplicationController
   # We don't want to use protect_from_forgery for metrics. Instead we will have namespaces with keypairs for authentication.
   skip_before_filter :verify_authenticity_token
   
+  def key_index
+    @metrics = Metric.find_all_by_key(params[:key_name]) # Need to add ""s to not break SQL
+  end
+  
   # GET /metrics
   # GET /metrics.xml
   def index

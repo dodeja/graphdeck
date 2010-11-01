@@ -29,3 +29,43 @@
 <br />
 
 <%= link_to 'New Aggregate metric', new_aggregate_metric_path %>
+
+<hr />
+
+Type: <%= @type %>
+From: <%= @from %>
+To: <%= @to %>
+
+<%
+  min = 0
+  max = 0
+  tsd = ""
+  i = @from.to_i
+  while i <= @to.to_i
+    if @indexed_aggregate_metrics[i].nil?
+      tsd << '_'
+    else
+      value = @indexed_aggregate_metrics[i].value
+      if value < min
+        min = value
+      end
+      if value > max
+        max = value
+      end
+      tsd << value.to_s
+    end
+    if i < @to.to_i
+      tsd << ','
+    end
+    i += 300
+  end
+%>
+
+Min: <%= min %><br />
+Max: <%= max %><br />
+TSD: <%= tsd %><br />
+<%
+  url = "http://chart.apis.google.com/chart?chxr=0,#{min},#{max}&chxt=y&chs=600x200&cht=lc&chds=#{min},#{max}&chd=t:#{tsd}&chg=14.3,-1,1,1&chls=1"
+%>
+
+<img src="<%= url %>" />

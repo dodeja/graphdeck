@@ -1,7 +1,17 @@
 Graphdeck::Application.routes.draw do
+  
+  match 'metrics/:name', :to => 'aggregate_metrics#view'
+  
+  resources :aggregate_metric_metadatas
+
   resources :aggregate_metrics
 
-  resources :metrics
+  resources :metrics do
+    collection do
+      # get 'view'
+    end
+  end
+  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
