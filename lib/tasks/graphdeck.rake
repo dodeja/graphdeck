@@ -48,11 +48,23 @@ namespace :graphdeck do
           puts "tp100i: " + tp100i.to_s
           puts "tp100: " + tp100.to_s
 
+          amcount = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::COUNT])
           amaverage = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::AVERAGE])
           amtp50 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP50])
           amtp90 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP90])
           amtp99 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP99])
           amtp100 = AggregateMetric.find(:first, :conditions => ['name = ? and timestamp = ? and duration = ? and metric_type = ?', name, range, 300, AggregateMetric::TP100])
+          if amcount.nil?
+            amcount = AggregateMetric.new(:name => name, :value => count, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT)
+            if amcount.save
+              puts "Save success"
+            else
+              puts "Save fail: #{amcount.errors.inspect}"
+            end
+          else
+            puts "Didn't create a new aggregate metric because I already found one: #{amcount.inspect}"
+          end
+          
           if amaverage.nil?
             amaverage = AggregateMetric.new(:name => name, :value => average, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::AVERAGE)
             if amaverage.save
