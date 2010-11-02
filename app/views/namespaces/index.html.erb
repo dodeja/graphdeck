@@ -1,0 +1,23 @@
+<h1>Listing namespaces</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @namespaces.each do |namespace| %>
+  <tr>
+    <td><%= namespace.name %></td>
+    <td><%= link_to 'Show', namespace %></td>
+    <td><%= link_to 'Edit', edit_namespace_path(namespace) %></td>
+    <td><%= link_to 'Destroy', namespace, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Namespace', new_namespace_path %>

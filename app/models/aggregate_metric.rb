@@ -11,6 +11,7 @@ class AggregateMetric < ActiveRecord::Base
   validates_presence_of :timestamp
   validates_presence_of :duration
   validates_presence_of :metric_type
+  validates_presence_of :namespace_id
   
   validates_numericality_of :value
   
