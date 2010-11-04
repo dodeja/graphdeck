@@ -7,8 +7,29 @@
   <%= csrf_meta_tag %>
 </head>
 <body>
-
-<%= yield %>
+  <div style="border: 1px solid red;">
+    <div style="border: 1px solid red;">debug</div>
+    <% if current_user %>
+      Logged in as: <%= current_user.login %> <%= link_to 'Logout', current_user_session, :method => :delete %>
+      <ul>
+        <li><%= link_to 'Namespaces', namespaces_url %></li>
+      </ul>
+    <% else %>
+      Not logged in. <%= link_to 'Login', new_user_session_url %> <%= link_to 'Register', new_user_url %>
+    <% end %>
+  </div>
+  
+  <% if flash[:notice] %>
+    <div style="border: 1px solid green;">
+      <div style="border: 1px solid green;">flash[:notice]</div>
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+  
+  <div style="border: 1px solid black;">
+    <div style="border: 1px solid black;">yield</div>
+    <%= yield %>
+  </div>
 
 </body>
 </html>
