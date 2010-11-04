@@ -1,4 +1,6 @@
 class Metric < ActiveRecord::Base
+  belongs_to :namespace
+  
   validates_presence_of :name
   validates_presence_of :value
   validates_presence_of :timestamp

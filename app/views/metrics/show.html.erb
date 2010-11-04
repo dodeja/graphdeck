@@ -1,8 +1,8 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Key:</b>
-  <%= @metric.key %>
+  <b>Name:</b>
+  <%= @metric.name %>
 </p>
 
 <p>
@@ -16,5 +16,5 @@
 </p>
 
 
-<%= link_to 'Edit', edit_metric_path(@metric) %> |
-<%= link_to 'Back', metrics_path %>
+<%= link_to 'Edit', edit_namespace_metric_path(@namespace, @metric) %> |
+<%= link_to 'Back', namespace_metrics_path(@namespace) %>

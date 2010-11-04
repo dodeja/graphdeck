@@ -4,7 +4,7 @@ require 'net/http'
 require 'uri'
 
 def generate
-  args = {'metric[name]'=>'foo', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s}
+  args = {'metric[name]'=>'foo', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s, 'namespace' => 'test'}
   res = Net::HTTP.post_form(URI.parse('http://localhost:8080/metrics'), args)
   puts res.body
 end

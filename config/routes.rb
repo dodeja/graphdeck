@@ -1,18 +1,15 @@
 Graphdeck::Application.routes.draw do
   
-  resources :namespaces
+  resources :namespaces do
+    resources :metrics
+    resources :aggregate_metrics
+  end
+  
+  resources :metrics
 
   match 'metrics/:name', :to => 'aggregate_metrics#view'
   
   resources :aggregate_metric_metadatas
-
-  resources :aggregate_metrics
-
-  resources :metrics do
-    collection do
-      # get 'view'
-    end
-  end
 
   resources :users
   resources :user_sessions

@@ -5,7 +5,7 @@ class NamespacesController < ApplicationController
   # GET /namespaces
   # GET /namespaces.xml
   def index
-    @namespaces = Namespace.all
+    @namespaces = current_user.namespaces
 
     respond_to do |format|
       format.html # index.html.erb
@@ -16,7 +16,7 @@ class NamespacesController < ApplicationController
   # GET /namespaces/1
   # GET /namespaces/1.xml
   def show
-    @namespace = Namespace.find(params[:id])
+    @namespace = Namespace.find_by_name(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -44,6 +44,7 @@ class NamespacesController < ApplicationController
   # POST /namespaces.xml
   def create
     @namespace = Namespace.new(params[:namespace])
+    @namespace.users << current_user
 
     respond_to do |format|
       if @namespace.save
@@ -82,5 +83,5 @@ class NamespacesController < ApplicationController
       format.html { redirect_to(namespaces_url) }
       format.xml  { head :ok }
     end
-  end
+  end  
 end

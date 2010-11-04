@@ -3,6 +3,8 @@ class MetricsController < ApplicationController
   # We don't want to use protect_from_forgery for metrics. Instead we will have namespaces with keypairs for authentication.
   skip_before_filter :verify_authenticity_token
   
+  before_filter :find_namespace
+  
   def key_index
     @metrics = Metric.find_all_by_key(params[:key_name]) # Need to add ""s to not break SQL
   end
@@ -10,7 +12,7 @@ class MetricsController < ApplicationController
   # GET /metrics
   # GET /metrics.xml
   def index
-    @metrics = Metric.all
+    @metrics = @namespace.metrics
 
     respond_to do |format|
       format.html # index.html.erb
@@ -49,7 +51,11 @@ class MetricsController < ApplicationController
   # POST /metrics.xml
   def create
     @metric = Metric.new(params[:metric])
-
+    namespace = Namespace.find_by_name(params[:namespace])
+    if namespace
+      @metric.namespace = namespace
+    end
+    
     respond_to do |format|
       if @metric.save
         format.html { redirect_to(@metric, :notice => 'Metric was successfully created.') }
@@ -88,4 +94,11 @@ class MetricsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  private
+  
+  def find_namespace
+      @namespace = Namespace.find_by_name(params[:namespace_id])
+  end
+  
 end
