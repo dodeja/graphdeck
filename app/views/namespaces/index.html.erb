@@ -2,22 +2,24 @@
 
 <table>
   <tr>
-    <th>Name</th>
-    <th></th>
+    <th>Namespace</th>
     <th></th>
     <th></th>
   </tr>
 
 <% @namespaces.each do |namespace| %>
   <tr>
-    <td><%= namespace.name %></td>
-    <td><%= link_to 'Show', namespace %></td>
-    <td><%= link_to 'Edit', edit_namespace_path(namespace) %></td>
-    <td><%= link_to 'Destroy', namespace, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to namespace.name, namespace %></td>
+    <td><%= link_to 'Edit (DO NOT USE)', edit_namespace_path(namespace) %></td>
+    <td><%= link_to 'Destroy (DO NOT USE)', namespace, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Namespace', new_namespace_path %>
+<%= link_to 'New Namespace (DO NOT USE)', new_namespace_path %>
+<br /><br />
+<div style="border: 3px solid red;">
+  Please don't make or change any namespaces yet. It technically will work but it's not really ready for it.
+</div>

@@ -6,6 +6,23 @@
   <% end %>
 </ul>
 
+<%= link_to 'Back to namespaces', namespaces_path %><br/><br/>
+
+<script type="text/javascript">
+  var toggle_table = function () {
+    var d = document.getElementById("aggregate_metrics_table");
+    if(d.style.display == "block") {
+      d.style.display = "none";
+    } else {
+      d.style.display = "block";
+    }
+  };
+</script>
+
+<a href="#" onclick="toggle_table()">show/hide aggregate metrics table (DO NOT USE)</a>
+
+<div id="aggregate_metrics_table" style="display: none;">
+
 <h1>Listing aggregate_metrics</h1>
 
 <table>
@@ -29,11 +46,13 @@
     <td><%= aggregate_metric.timestamp %></td>
     <td><%= aggregate_metric.duration %></td>
     <td><%= aggregate_metric.metric_type %></td>
-    <td><%= link_to 'Show', [@namespace, aggregate_metric] %></td>
-    <td><%= link_to 'Edit', edit_namespace_aggregate_metric_path(@namespace, aggregate_metric) %></td>
-    <td><%= link_to 'Destroy', [@namespace, aggregate_metric], :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Show (DO NOT USE)', [@namespace, aggregate_metric] %></td>
+    <td><%= link_to 'Edit (DO NOT USE)', edit_namespace_aggregate_metric_path(@namespace, aggregate_metric) %></td>
+    <td><%= link_to 'Destroy (DO NOT USE)', [@namespace, aggregate_metric], :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
+
+</div>
