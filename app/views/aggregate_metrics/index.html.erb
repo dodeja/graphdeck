@@ -1,3 +1,11 @@
+<h1>Aggregate Metrics</h1>
+
+<ul>
+  <% @grouped_aggregate_metrics.each do |name, aggregate_metrics| %>
+    <li><%= name %>: <%= link_to 'count', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::COUNT}) %> <%= link_to 'average', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::AVERAGE}) %> <%= link_to 'tp50', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP50}) %> <%= link_to 'tp90', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP90}) %> <%= link_to 'tp99', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP99}) %> <%= link_to 'tp100', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP100}) %></li>
+  <% end %>
+</ul>
+
 <h1>Listing aggregate_metrics</h1>
 
 <table>

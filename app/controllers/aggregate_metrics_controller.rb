@@ -1,5 +1,6 @@
 class AggregateMetricsController < ApplicationController
   
+  before_filter :require_user
   before_filter :find_namespace
   
   def view
@@ -13,7 +14,8 @@ class AggregateMetricsController < ApplicationController
   # GET /aggregate_metrics
   # GET /aggregate_metrics.xml
   def index
-    @aggregate_metrics = AggregateMetric.all
+    @aggregate_metrics = @namespace.aggregate_metrics
+    @grouped_aggregate_metrics = @aggregate_metrics.group_by { |aggregate_metric| aggregate_metric.name }
 
     respond_to do |format|
       format.html # index.html.erb

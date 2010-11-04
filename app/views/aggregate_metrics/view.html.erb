@@ -1,38 +1,4 @@
-<h1>Listing aggregate_metrics</h1>
 
-<table>
-  <tr>
-    <th>Namespace</th>
-    <th>Name</th>
-    <th>Value</th>
-    <th>Timestamp</th>
-    <th>Duration</th>
-    <th>Metric Type</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @aggregate_metrics.each do |aggregate_metric| %>
-  <tr>
-    <td><%= aggregate_metric.namespace.name %></td>
-    <td><%= aggregate_metric.name %></td>
-    <td><%= aggregate_metric.value %></td>
-    <td><%= aggregate_metric.timestamp %></td>
-    <td><%= aggregate_metric.duration %></td>
-    <td><%= aggregate_metric.metric_type %></td>
-    <td><%= link_to 'Show', [@namespace, aggregate_metric] %></td>
-    <td><%= link_to 'Edit', edit_namespace_aggregate_metric_path(@namespace, aggregate_metric) %></td>
-    <td><%= link_to 'Destroy', [@namespace, aggregate_metric], :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-<%= link_to 'New Aggregate metric', new_namespace_aggregate_metric_path(@namespace) %>
-
-<hr />
 
 Type: <%= @type %>
 From: <%= @from %>
@@ -70,4 +36,40 @@ TSD: <%= tsd %><br />
   url = "http://chart.apis.google.com/chart?chxr=0,#{min},#{max}&chxt=y&chs=600x200&cht=lc&chds=#{min},#{max}&chd=t:#{tsd}&chg=14.3,-1,1,1&chls=1"
 %>
 
-<img src="<%= url %>" />
+<div>
+  <img src="<%= url %>" />
+</div>
+
+<%= link_to 'Back', namespace_aggregate_metrics_path(@namespace) %>
+
+<hr />
+
+<h1>Listing aggregate_metrics</h1>
+
+<table>
+  <tr>
+    <th>Namespace</th>
+    <th>Name</th>
+    <th>Value</th>
+    <th>Timestamp</th>
+    <th>Duration</th>
+    <th>Metric Type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @aggregate_metrics.each do |aggregate_metric| %>
+  <tr>
+    <td><%= aggregate_metric.namespace.name %></td>
+    <td><%= aggregate_metric.name %></td>
+    <td><%= aggregate_metric.value %></td>
+    <td><%= aggregate_metric.timestamp %></td>
+    <td><%= aggregate_metric.duration %></td>
+    <td><%= aggregate_metric.metric_type %></td>
+    <td><%= link_to 'Show', [@namespace, aggregate_metric] %></td>
+    <td><%= link_to 'Edit', edit_namespace_aggregate_metric_path(@namespace, aggregate_metric) %></td>
+    <td><%= link_to 'Destroy', [@namespace, aggregate_metric], :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
