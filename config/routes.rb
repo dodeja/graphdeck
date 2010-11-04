@@ -2,7 +2,11 @@ Graphdeck::Application.routes.draw do
   
   resources :namespaces do
     resources :metrics
-    resources :aggregate_metrics
+    resources :aggregate_metrics do
+      collection do
+        get 'view'
+      end
+    end
   end
   
   resources :metrics

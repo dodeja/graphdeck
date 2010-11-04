@@ -1,10 +1,12 @@
 class AggregateMetricsController < ApplicationController
   
+  before_filter :find_namespace
+  
   def view
     @type = params[:type] || 0
     @from = params[:from] || (Time.now.to_i - 86400) / 300 * 300
     @to = params[:to] || Time.now.to_i / 300 * 300
-    @aggregate_metrics = AggregateMetric.find_all_by_name(params[:name], :conditions => "metric_type = #{@type} and timestamp >= #{@from} and timestamp <= #{@to}")
+    @aggregate_metrics = AggregateMetric.find_all_by_name(params[:name], :conditions => ['namespace_id = ? and metric_type = ? and timestamp >= ? and timestamp <= ?', @namespace.id, @type, @from, @to])
     @indexed_aggregate_metrics = @aggregate_metrics.index_by(&:timestamp)
   end
   
@@ -89,4 +91,11 @@ class AggregateMetricsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  private
+  
+  def find_namespace
+    @namespace = Namespace.find_by_name(params[:namespace_id])
+  end
+  
 end

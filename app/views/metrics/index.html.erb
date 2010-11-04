@@ -2,6 +2,7 @@
 
 <table>
   <tr>
+    <th>Namespace</th>
     <th>Name</th>
     <th>Value</th>
     <th>Timestamp</th>
@@ -12,6 +13,7 @@
 
 <% @metrics.each do |metric| %>
   <tr>
+    <td><%= metric.namespace.name %></td>
     <td><%= metric.name %></td>
     <td><%= metric.value %></td>
     <td><%= metric.timestamp %></td>

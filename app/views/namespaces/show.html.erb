@@ -5,6 +5,7 @@
   <%= @namespace.name %>
 </p>
 
-
+<%= link_to 'Aggregate Metrics', namespace_aggregate_metrics_path(@namespace) %> |
+<%= link_to 'Metrics', namespace_metrics_path(@namespace) %> | 
 <%= link_to 'Edit', edit_namespace_path(@namespace) %> |
 <%= link_to 'Back', namespaces_path %>

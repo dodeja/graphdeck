@@ -98,7 +98,7 @@ class MetricsController < ApplicationController
   private
   
   def find_namespace
-      @namespace = Namespace.find_by_name(params[:namespace_id])
+    @namespace = Namespace.find_by_name(params[:namespace_id])
   end
   
 end
