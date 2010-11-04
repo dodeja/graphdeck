@@ -1,5 +1,0 @@
-<% if current_user %>
-  You are logged in as <%= current_user.login %>. <%= link_to 'Logout', current_user_session, :method => :delete %> <%= link_to 'Namespaces', namespaces_url %>
-<% else %>
-  You are not logged in. <%= link_to 'Login', new_user_session_url %> <%= link_to 'Register', new_user_url %>
-<% end %>
