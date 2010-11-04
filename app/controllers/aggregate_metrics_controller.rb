@@ -32,17 +32,6 @@ class AggregateMetricsController < ApplicationController
     end
   end
 
-  # GET /aggregate_metrics/new
-  # GET /aggregate_metrics/new.xml
-  def new
-    @aggregate_metric = AggregateMetric.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @aggregate_metric }
-    end
-  end
-
   # GET /aggregate_metrics/1/edit
   def edit
     @aggregate_metric = AggregateMetric.find(params[:id])
