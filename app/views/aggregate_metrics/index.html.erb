@@ -1,8 +1,8 @@
 <h1>Aggregate Metrics</h1>
 
 <ul>
-  <% @grouped_aggregate_metrics.each do |name, aggregate_metrics| %>
-    <li><%= name %>: <%= link_to 'count', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::COUNT}) %> <%= link_to 'average', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::AVERAGE}) %> <%= link_to 'tp50', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP50}) %> <%= link_to 'tp90', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP90}) %> <%= link_to 'tp99', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP99}) %> <%= link_to 'tp100', view_namespace_aggregate_metrics_path({:name => name, :type => AggregateMetric::TP100}) %></li>
+  <% @aggregate_metrics.each do |a| %>
+    <li><%= a.name %>: <%= link_to 'count', view_namespace_aggregate_metrics_path({:name => a.name, :type => AggregateMetric::COUNT}) %> <%= link_to 'average', view_namespace_aggregate_metrics_path({:name => a.name, :type => AggregateMetric::AVERAGE}) %> <%= link_to 'tp50', view_namespace_aggregate_metrics_path({:name => a.name, :type => AggregateMetric::TP50}) %> <%= link_to 'tp90', view_namespace_aggregate_metrics_path({:name => a.name, :type => AggregateMetric::TP90}) %> <%= link_to 'tp99', view_namespace_aggregate_metrics_path({:name => a.name, :type => AggregateMetric::TP99}) %> <%= link_to 'tp100', view_namespace_aggregate_metrics_path({:name => a.name, :type => AggregateMetric::TP100}) %></li>
   <% end %>
 </ul>
 
@@ -18,41 +18,3 @@
     }
   };
 </script>
-
-<a href="#" onclick="toggle_table()">show/hide aggregate metrics table (DO NOT USE)</a>
-
-<div id="aggregate_metrics_table" style="display: none;">
-
-<h1>Listing aggregate_metrics</h1>
-
-<table>
-  <tr>
-    <th>Namespace</th>
-    <th>Name</th>
-    <th>Value</th>
-    <th>Timestamp</th>
-    <th>Duration</th>
-    <th>Metric Type</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @aggregate_metrics.each do |aggregate_metric| %>
-  <tr>
-    <td><%= aggregate_metric.namespace.name %></td>
-    <td><%= aggregate_metric.name %></td>
-    <td><%= aggregate_metric.value %></td>
-    <td><%= aggregate_metric.timestamp %></td>
-    <td><%= aggregate_metric.duration %></td>
-    <td><%= aggregate_metric.metric_type %></td>
-    <td><%= link_to 'Show (DO NOT USE)', [@namespace, aggregate_metric] %></td>
-    <td><%= link_to 'Edit (DO NOT USE)', edit_namespace_aggregate_metric_path(@namespace, aggregate_metric) %></td>
-    <td><%= link_to 'Destroy (DO NOT USE)', [@namespace, aggregate_metric], :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-</div>
