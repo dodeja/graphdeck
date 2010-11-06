@@ -14,7 +14,7 @@ class AggregateMetricsController < ApplicationController
   # GET /aggregate_metrics
   # GET /aggregate_metrics.xml
   def index
-    @aggregate_metrics = @namespace.aggregate_metrics
+    @aggregate_metrics = AggregateMetric.find(:all, :group => :name, :select => 'DISTINCT name', :conditions => {:namespace_id => @namespace.id})
     @grouped_aggregate_metrics = @aggregate_metrics.group_by { |aggregate_metric| aggregate_metric.name }
 
     respond_to do |format|
