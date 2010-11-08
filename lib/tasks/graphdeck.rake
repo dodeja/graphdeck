@@ -3,21 +3,33 @@ namespace :graphdeck do
   desc 'Aggregate metrics'
   task :aggregate => :environment do
     puts "Get all names from 5 minute interval"
+    t0_namespaces_query = Time.now.to_i
     namespaces = Namespace.find(:all).group_by { |namespace| namespace.name }
-    
+    t1_namespaces_query = Time.now.to_i
+    t_namespaces_query = t1_namespaces_query - t0_namespaces_query
+    puts "Timing: t_namespaces_query:#{t_namespaces_query}"
+
     namespaces.each do |namespace, namespace_array|
-      namespaceid = namespace_array[0].id
-      metrics = Metric.find(:all, :conditions => ['namespace_id = ?', namespaceid]).group_by { |metric| metric.name }
-      metrics.each do |name, array|
-      
-      
-        namemetrics = Metric.find_all_by_name(name).group_by { |metric| metric.timestamp / 300 * 300 }
-        namemetrics.each do |range, array|
+      namespace_id = namespace_array[0].id
+      t0_metric_names_query = Time.now.to_i
+      metric_names = namespace_array[0].metric_names
+      t1_metric_names_query = Time.now.to_i
+      t_metric_names_query = t1_metric_names_query - t0_metric_names_query
+      puts "Timing: namespace:#{namespace} t_metric_names_query:#{t_metric_names_query}"
+      metric_names.each do |metric_name|
+        t0_metric_query = Time.now.to_i
+        metrics = Metric.find(:all, :conditions => {:name => metric_name, :namespace_id => namespace_id}).group_by { |metric| metric.timestamp / 300 * 300 }
+        t1_metric_query = Time.now.to_i
+        t_metric_query = t1_metric_query - t0_metric_query
+        puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_metric_query:#{t_metric_query}"
+        
+        t0_aggregate_metric_query = Time.now.to_i
+        metrics.each do |range, metric_array|
           unless range == Time.now.to_i / 300 * 300
             count = 0
             average = 0.0
         
-            array.sort! { |x,y| x.value <=> y.value }.each do |metric|
+            metric_array.sort! { |x,y| x.value <=> y.value }.each do |metric|
               count += 1 
               average += metric.value
             end
@@ -26,20 +38,19 @@ namespace :graphdeck do
               average /= count
     
               tp50i = ((count-1) * 50 / 100)
-              puts tp50i
-              tp50 = array[tp50i].value
+              tp50 = metric_array[tp50i].value
       
               tp90i = ((count-1) * 90 / 100)
-              tp90 = array[tp90i].value
+              tp90 = metric_array[tp90i].value
       
               tp99i = ((count-1) * 99 / 100)
-              tp99 = array[tp99i].value
+              tp99 = metric_array[tp99i].value
       
               tp100i = count - 1
-              tp100 = array[tp100i].value
+              tp100 = metric_array[tp100i].value
             end
       
-            puts "=== #{name} #{range}"
+            puts "=== #{metric_name} #{range}"
             puts "Count: " + count.to_s
             puts "Average: " + average.to_s
           
@@ -52,12 +63,12 @@ namespace :graphdeck do
             puts "tp100i: " + tp100i.to_s
             puts "tp100: " + tp100.to_s
 
-            amcount = AggregateMetric.find(:first, :conditions => ['namespace_id = ? and name = ? and timestamp = ? and duration = ? and metric_type = ?', namespaceid, name, range, 300, AggregateMetric::COUNT])
-            amaverage = AggregateMetric.find(:first, :conditions => ['namespace_id = ? and name = ? and timestamp = ? and duration = ? and metric_type = ?', namespaceid, name, range, 300, AggregateMetric::AVERAGE])
-            amtp50 = AggregateMetric.find(:first, :conditions => ['namespace_id = ? and name = ? and timestamp = ? and duration = ? and metric_type = ?', namespaceid, name, range, 300, AggregateMetric::TP50])
-            amtp90 = AggregateMetric.find(:first, :conditions => ['namespace_id = ? and name = ? and timestamp = ? and duration = ? and metric_type = ?', namespaceid, name, range, 300, AggregateMetric::TP90])
-            amtp99 = AggregateMetric.find(:first, :conditions => ['namespace_id = ? and name = ? and timestamp = ? and duration = ? and metric_type = ?', namespaceid, name, range, 300, AggregateMetric::TP99])
-            amtp100 = AggregateMetric.find(:first, :conditions => ['namespace_id = ? and name = ? and timestamp = ? and duration = ? and metric_type = ?', namespaceid, name, range, 300, AggregateMetric::TP100])
+            amcount = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT})
+            amaverage = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::AVERAGE})
+            amtp50 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP50})
+            amtp90 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP90})
+            amtp99 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP99})
+            amtp100 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP100})
             if amcount.nil?
               amcount = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => count, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT)
               if amcount.save
@@ -126,6 +137,9 @@ namespace :graphdeck do
           
           end
         end
+        t1_aggregate_metric_query = Time.now.to_i
+        t_aggregate_metric_query = t1_aggregate_metric_query - t0_aggregate_metric_query
+        puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_aggregate_metric_query:#{t_aggregate_metric_query}"
       end
     end
   end
