@@ -17,8 +17,20 @@ namespace :graphdeck do
       t_metric_names_query = t1_metric_names_query - t0_metric_names_query
       puts "Timing: namespace:#{namespace} t_metric_names_query:#{t_metric_names_query}"
       metric_names.each do |metric_name|
+        t0_metric_metadata_query = Time.now.to_i
+        metric_metadata = AggregateMetricMetadata.find(:first, :conditions => {:name => metric_name, :duration => 300, :namespace_id => namespace_id})
+        t1_metric_metadata_query = Time.now.to_i
+        t_metric_metadata_query = t1_metric_metadata_query - t0_metric_metadata_query
+        puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_metric_query:#{t_metric_metadata_query}"
+        
+        timestamp = nil
+        metric_metadata.each do |metadata|
+          timestamp = metric_metadata.timestamp if ((timestamp.nil?) or (metric_metadata.timestamp < timestamp))
+        end
+        timestamp = 0 if timestamp.nil?
+        
         t0_metric_query = Time.now.to_i
-        metrics = Metric.find(:all, :conditions => {:name => metric_name, :namespace_id => namespace_id}).group_by { |metric| metric.timestamp / 300 * 300 }
+        metrics = Metric.find(:all, :conditions => {:name => metric_name, :timestamp_gte => timestamp, :namespace_id => namespace_id}).group_by { |metric| metric.timestamp / 300 * 300 }
         t1_metric_query = Time.now.to_i
         t_metric_query = t1_metric_query - t0_metric_query
         puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_metric_query:#{t_metric_query}"
@@ -69,12 +81,16 @@ namespace :graphdeck do
             amtp90 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP90})
             amtp99 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP99})
             amtp100 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP100})
+            
+            problem = false
+            
             if amcount.nil?
               amcount = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => count, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT)
               if amcount.save
                 puts "Save success"
               else
                 puts "Save fail: #{amcount.errors.inspect}"
+                problem = true
               end
             else
               puts "Didn't create a new aggregate metric because I already found one: #{amcount.inspect}"
@@ -86,6 +102,7 @@ namespace :graphdeck do
                 puts "Save success"
               else
                 puts "Save fail: #{amaverage.errors.inspect}"
+                problem = true
               end
             else
               puts "Didn't create a new aggregate metric because I already found one: #{amaverage.inspect}"
@@ -97,6 +114,7 @@ namespace :graphdeck do
                 puts "Save success"
               else
                 puts "Save fail: #{amtp50.errors.inspect}"
+                problem = true
               end
             else
               puts "Didn't create a new aggregate metric because I already found one: #{amtp50.inspect}"
@@ -108,6 +126,7 @@ namespace :graphdeck do
                 puts "Save success"
               else
                 puts "Save fail: #{amtp90.errors.inspect}"
+                problem = true
               end
             else
               puts "Didn't create a new aggregate metric because I already found one: #{amtp90.inspect}"
@@ -119,6 +138,7 @@ namespace :graphdeck do
                 puts "Save success"
               else
                 puts "Save fail: #{amtp99.errors.inspect}"
+                problem = true
               end
             else
               puts "Didn't create a new aggregate metric because I already found one: #{amtp99.inspect}"
@@ -130,9 +150,28 @@ namespace :graphdeck do
                 puts "Save success"
               else
                 puts "Save fail: #{amtp100.errors.inspect}"
+                problem = true
               end
             else
               puts "Didn't create a new aggregate metric because I already found one: #{amtp100.inspect}"
+            end
+            
+            unless problem
+              if metric_metadata.nil?
+                metric_metadata = AggregateMetricMetadata.new(:namespace_id => namespaceid, :name => name, :timestamp => range, :duration => 300)
+                if metric_metadata.save
+                  puts "Metadata save success"
+                else
+                  puts "Metadata save fail: #{metric_metadata.errors.inspect}"
+                end
+              else
+                metric_metadata.timestamp = range
+                if metric_metadata.save
+                  puts "Metadata update success"
+                else
+                  puts "Metadata update fail: #{metric_metadata.errors.inspect}"
+                end
+              end
             end
           
           end

@@ -18,4 +18,8 @@ class AggregateMetric < ActiveRecord::Base
   validates_numericality_of :value
   
   validates_uniqueness_of :name, :scope => [:timestamp, :duration, :metric_type]
+  
+  def self.metric_types
+    COUNT..TP100
+  end
 end
