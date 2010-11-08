@@ -85,7 +85,7 @@ namespace :graphdeck do
             problem = false
             
             if amcount.nil?
-              amcount = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => count, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT)
+              amcount = AggregateMetric.new(:namespace_id => namespace_id, :name => metric_name, :value => count, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT)
               if amcount.save
                 puts "Save success"
               else
@@ -97,7 +97,7 @@ namespace :graphdeck do
             end
           
             if amaverage.nil?
-              amaverage = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => average, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::AVERAGE)
+              amaverage = AggregateMetric.new(:namespace_id => namespace_id, :name => metric_name, :value => average, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::AVERAGE)
               if amaverage.save
                 puts "Save success"
               else
@@ -109,7 +109,7 @@ namespace :graphdeck do
             end
           
             if amtp50.nil?
-              amtp50 = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => tp50, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP50)
+              amtp50 = AggregateMetric.new(:namespace_id => namespace_id, :name => metric_name, :value => tp50, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP50)
               if amtp50.save
                 puts "Save success"
               else
@@ -121,7 +121,7 @@ namespace :graphdeck do
             end
           
             if amtp90.nil?
-              amtp90 = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => tp90, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP90)
+              amtp90 = AggregateMetric.new(:namespace_id => namespace_id, :name => metric_name, :value => tp90, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP90)
               if amtp90.save
                 puts "Save success"
               else
@@ -133,7 +133,7 @@ namespace :graphdeck do
             end
           
             if amtp99.nil?
-              amtp99 = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => tp99, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP99)
+              amtp99 = AggregateMetric.new(:namespace_id => namespace_id, :name => metric_name, :value => tp99, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP99)
               if amtp99.save
                 puts "Save success"
               else
@@ -145,7 +145,7 @@ namespace :graphdeck do
             end
           
             if amtp100.nil?
-              amtp100 = AggregateMetric.new(:namespace_id => namespaceid, :name => name, :value => tp100, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP100)
+              amtp100 = AggregateMetric.new(:namespace_id => namespace_id, :name => metric_name, :value => tp100, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP100)
               if amtp100.save
                 puts "Save success"
               else
