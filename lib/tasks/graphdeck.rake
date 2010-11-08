@@ -158,7 +158,7 @@ namespace :graphdeck do
             
             unless problem
               if metric_metadata.nil?
-                metric_metadata = AggregateMetricMetadata.new(:namespace_id => namespaceid, :name => name, :timestamp => range, :duration => 300)
+                metric_metadata = AggregateMetricMetadata.new(:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300)
                 if metric_metadata.save
                   puts "Metadata save success"
                 else
