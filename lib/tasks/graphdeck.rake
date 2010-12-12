@@ -2,41 +2,57 @@ namespace :graphdeck do
 
   desc 'Aggregate metrics'
   task :aggregate => :environment do
-    puts "Get all names from 5 minute interval"
+    STDOUT.flush
+    
+    # Get all namespaces
     t0_namespaces_query = Time.now.to_i
     namespaces = Namespace.find(:all).group_by { |namespace| namespace.name }
     t1_namespaces_query = Time.now.to_i
     t_namespaces_query = t1_namespaces_query - t0_namespaces_query
-    puts "Timing: t_namespaces_query:#{t_namespaces_query}"
+    puts "Found namespaces: (#{t_namespaces_query} s)"
+    namespaces.each do |name, namespace|
+      puts " - #{name}"
+    end
 
     namespaces.each do |namespace, namespace_array|
+      
       namespace_id = namespace_array[0].id
       t0_metric_names_query = Time.now.to_i
       metric_names = namespace_array[0].metric_names
       t1_metric_names_query = Time.now.to_i
       t_metric_names_query = t1_metric_names_query - t0_metric_names_query
-      puts "Timing: namespace:#{namespace} t_metric_names_query:#{t_metric_names_query}"
+      
+      puts "In namespace '#{namespace}', found metrics: (#{t_metric_names_query} s)"
+      metric_names.each do |name|
+        puts " - #{name}"
+      end
+      
       metric_names.each do |metric_name|
         t0_metric_metadata_query = Time.now.to_i
         metric_metadata = AggregateMetricMetadata.find(:first, :conditions => {:name => metric_name, :duration => 300, :namespace_id => namespace_id})
         t1_metric_metadata_query = Time.now.to_i
         t_metric_metadata_query = t1_metric_metadata_query - t0_metric_metadata_query
-        puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_metric_query:#{t_metric_metadata_query}"
         
-        timestamp = nil
-        metric_metadata.each do |metadata|
-          timestamp = metric_metadata.timestamp if ((timestamp.nil?) or (metric_metadata.timestamp < timestamp))
+        timestamp = 0
+        if metric_metadata.nil?
+          puts "In namespace '#{namespace}', metric '#{metric_name}', did not find aggregate metric metadata: (#{t_metric_metadata_query} s)"
+        else
+          puts "In namespace '#{namespace}', metric '#{metric_name}', found aggregate metric metadata: (#{t_metric_metadata_query} s)"
+          timestamp = metric_metadata.timestamp + 300
         end
-        timestamp = 0 if timestamp.nil?
+        
+        puts "In namespace '#{namespace}', metric '#{metric_name}', searching from timestamp #{timestamp}"
         
         t0_metric_query = Time.now.to_i
-        metrics = Metric.find(:all, :conditions => {:name => metric_name, :timestamp_gte => timestamp, :namespace_id => namespace_id}).group_by { |metric| metric.timestamp / 300 * 300 }
+        metrics = Metric.find(:all, :conditions => {:name => metric_name, :timestamp => timestamp..Time.now.to_i, :namespace_id => namespace_id})
+        grouped_metrics = metrics.group_by { |metric| metric.timestamp / 300 * 300 }
         t1_metric_query = Time.now.to_i
         t_metric_query = t1_metric_query - t0_metric_query
-        puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_metric_query:#{t_metric_query}"
+        
+        puts "In namespace '#{namespace}', metric '#{metric_name}', found #{metrics.count} metrics and #{grouped_metrics.count} timestamp groups"
         
         t0_aggregate_metric_query = Time.now.to_i
-        metrics.each do |range, metric_array|
+        grouped_metrics.each do |range, metric_array|
           unless range == Time.now.to_i / 300 * 300
             count = 0
             average = 0.0
@@ -62,19 +78,18 @@ namespace :graphdeck do
               tp100 = metric_array[tp100i].value
             end
       
-            puts "=== #{metric_name} #{range}"
-            puts "Count: " + count.to_s
-            puts "Average: " + average.to_s
-          
-            puts "tp50i: " + tp50i.to_s
-            puts "tp50: " + tp50.to_s
-            puts "tp90i: " + tp90i.to_s
-            puts "tp90: " + tp90.to_s
-            puts "tp99i: " + tp99i.to_s
-            puts "tp99: " + tp99.to_s
-            puts "tp100i: " + tp100i.to_s
-            puts "tp100: " + tp100.to_s
-
+            # puts "=== #{metric_name} #{range}"
+            # puts "Count: " + count.to_s
+            # puts "Average: " + average.to_s
+            # puts "tp50i: " + tp50i.to_s
+            # puts "tp50: " + tp50.to_s
+            # puts "tp90i: " + tp90i.to_s
+            # puts "tp90: " + tp90.to_s
+            # puts "tp99i: " + tp99i.to_s
+            # puts "tp99: " + tp99.to_s
+            # puts "tp100i: " + tp100i.to_s
+            # puts "tp100: " + tp100.to_s
+            
             amcount = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::COUNT})
             amaverage = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::AVERAGE})
             amtp50 = AggregateMetric.find(:first, :conditions => {:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300, :metric_type => AggregateMetric::TP50})
@@ -160,16 +175,16 @@ namespace :graphdeck do
               if metric_metadata.nil?
                 metric_metadata = AggregateMetricMetadata.new(:namespace_id => namespace_id, :name => metric_name, :timestamp => range, :duration => 300)
                 if metric_metadata.save
-                  puts "Metadata save success"
+                  puts "Aggregate metric metadata save success"
                 else
-                  puts "Metadata save fail: #{metric_metadata.errors.inspect}"
+                  puts "Aggregate metric metadata save fail: #{metric_metadata.errors.inspect}"
                 end
               else
                 metric_metadata.timestamp = range
                 if metric_metadata.save
-                  puts "Metadata update success"
+                  puts "Aggregate metric metadata update succeed"
                 else
-                  puts "Metadata update fail: #{metric_metadata.errors.inspect}"
+                  puts "Aggregate metric metadata update fail: #{metric_metadata.errors.inspect}"
                 end
               end
             end
@@ -178,7 +193,7 @@ namespace :graphdeck do
         end
         t1_aggregate_metric_query = Time.now.to_i
         t_aggregate_metric_query = t1_aggregate_metric_query - t0_aggregate_metric_query
-        puts "Timing: namespace:#{namespace} metric_name:#{metric_name} t_aggregate_metric_query:#{t_aggregate_metric_query}"
+        puts "In namespace '#{namespace}', metric '#{metric_name}', finished aggregate metric updates (#{t_aggregate_metric_query} s)"
       end
     end
   end
