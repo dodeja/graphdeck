@@ -3,6 +3,7 @@ namespace :graphdeck do
   desc 'Aggregate metrics'
   task :aggregate => :environment do
     STDOUT.flush
+    ActiveRecord::Base.logger = Logger.new(STDOUT)
     
     # Get all namespaces
     t0_namespaces_query = Time.now.to_i
