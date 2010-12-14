@@ -19,7 +19,7 @@
     if i < @to.to_i
       tsd << ','
     end
-    i += 300
+    i += @duration.to_i
   end
 %>
 
@@ -48,6 +48,8 @@
 Type: <%= @type %><br />
 From: <%= @from %><br />
 To: <%= @to %><br />
+Duration: <%= @duration %><br />
+Window: <%= @window %><br />
 Min: <%= min %><br />
 Max: <%= max %><br />
 TSD: <%= tsd %><br />
