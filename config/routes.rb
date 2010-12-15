@@ -12,6 +12,7 @@ Graphdeck::Application.routes.draw do
   resources :metrics
 
   match 'metrics/:name', :to => 'aggregate_metrics#view'
+  match 'api/aggregate_metrics', :to => 'aggregate_metrics#api'
   
   resources :aggregate_metric_metadatas
 

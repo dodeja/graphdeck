@@ -99,3 +99,18 @@ TSD: <%= tsd %><br />
 <% end %>
 </table>
 </div>
+
+<% 
+h = HashWithIndifferentAccess.new({:type => @type, :name => @name, :duration => @duration, :from => @from, :to => @to, :namespace => @namespace.name})
+s = ""
+h.keys.sort.each do |key|
+  s << key.to_s << ',' << h[key].to_s << ','
+end
+s << @namespace.secret
+signature = Digest::MD5.hexdigest(s)
+%>
+<script type="text/javascript">
+var datasource = 'http://localhost:5000/api/aggregate_metrics?type=<%=@type%>&name=<%=@name%>&duration=<%=@duration%>&from=<%=@from%>&to=<%=@to%>&namespace=<%=@namespace.name%>&signature=<%=signature%>';
+</script>
+<div id="graphdeck"></div>
+<script src="/api/graphdeck.js"></script>

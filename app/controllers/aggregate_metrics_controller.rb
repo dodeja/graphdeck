@@ -1,7 +1,7 @@
 class AggregateMetricsController < ApplicationController
   
-  before_filter :require_user
-  before_filter :find_namespace
+  before_filter :require_user, :except => [:api]
+  before_filter :find_namespace, :except => [:api]
   
   def view
     @type = 0
@@ -19,8 +19,51 @@ class AggregateMetricsController < ApplicationController
     @to = Time.now.to_i / @duration * @duration
     @to = params[:to].to_i unless params[:to].nil?
     
+    @name = params[:name]
+    
     @aggregate_metrics = AggregateMetric.find_all_by_name(params[:name], :conditions => ['namespace_id = ? and metric_type = ? and timestamp >= ? and timestamp <= ? and duration = ?', @namespace.id, @type, @from, @to, @duration])
     @indexed_aggregate_metrics = @aggregate_metrics.index_by(&:timestamp)
+    
+    #AggregateMetric.view_api(:namespace => params[:namespace_id], :name => @name, :type => @type, :duration => @duration, :window => @window, :from => @from, :to => @to)
+    
+    respond_to do |format|
+      format.html # view.html.erb
+    end
+  end
+  
+  def api
+    if params[:signature].nil?
+      success = authenticate_or_request_with_http_basic do |namespace,secret|
+        @namespace = Namespace.find_by_name(namespace, :conditions => {:secret => secret})
+        !@namespace.nil?
+      end
+    else
+      p = params.dup
+      p.delete(:signature)
+      p.delete(:action)
+      p.delete(:controller)
+      p.delete(:callback)
+      
+      @namespace = Namespace.find_by_name(params[:namespace])
+      
+      s = ""
+      p.keys.sort.each do |key|
+        s << key << ',' << p[key].to_s << ','
+      end
+      s << @namespace.secret
+      signature = Digest::MD5.hexdigest(s)
+      
+      success = signature == params[:signature]
+      
+      render :status => :unauthorized unless success
+    end
+    
+    if success == true
+      callback = params[:callback]
+      jsonp = AggregateMetric.jsonp_api(:namespace => @namespace.name, :name => params[:name], :type => params[:type], :from => params[:from], :to => params[:to], :duration => params[:duration])
+      response = "#{callback}(#{jsonp.to_json});"
+      render :content_type => :js, :text => response
+    end    
   end
   
   # GET /aggregate_metrics
