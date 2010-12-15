@@ -37,7 +37,7 @@ class NamespacesController < ApplicationController
 
   # GET /namespaces/1/edit
   def edit
-    @namespace = Namespace.find(params[:id])
+    @namespace = Namespace.find_by_name(params[:id])
   end
 
   # POST /namespaces
@@ -60,7 +60,7 @@ class NamespacesController < ApplicationController
   # PUT /namespaces/1
   # PUT /namespaces/1.xml
   def update
-    @namespace = Namespace.find(params[:id])
+    @namespace = Namespace.find_by_name(params[:id])
 
     respond_to do |format|
       if @namespace.update_attributes(params[:namespace])
@@ -76,7 +76,7 @@ class NamespacesController < ApplicationController
   # DELETE /namespaces/1
   # DELETE /namespaces/1.xml
   def destroy
-    @namespace = Namespace.find(params[:id])
+    @namespace = Namespace.find_by_name(params[:id])
     @namespace.destroy
 
     respond_to do |format|
