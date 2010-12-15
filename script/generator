@@ -3,15 +3,18 @@
 require 'net/http'
 require 'uri'
 
+NAMES = ['foo', 'bar', 'baz', 'foo1', 'foo2', 'foo3', 'foo4', 'bar1', 'bar2', 'bar3']
+
 def generate
-  args = {'metric[name]'=>'foo', 'metric[value]'=>rand.to_s, 'metric[timestamp]' => Time.now.to_i.to_s, 'namespace' => 'test'}
-  res = Net::HTTP.post_form(URI.parse('http://localhost:8080/metrics'), args)
+  metric_name = NAMES[rand(NAMES.length)]
+  args = {'metric[name]'=>metric_name,'metric[value]'=>rand.to_s,'metric[timestamp]'=>Time.now.to_i.to_s,'namespace'=>'test'}
+  res = Net::HTTP.post_form(URI.parse('http://localhost:5000/metrics'), args)
   puts res.body
 end
 
-if ARGV.length > 0
+if ARGV.length == 2
   ARGV[0].to_i.times do |i|
-    sleep rand(10)
+    sleep rand(ARGV[1].to_i)
     generate
   end
 else
